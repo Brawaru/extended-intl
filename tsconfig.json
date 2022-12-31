@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "importsNotUsedAsValues": "error",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "types": [],
+    "outDir": "dist",
+    "declaration": true
+  },
+  "include": ["src"]
+}
