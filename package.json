@@ -27,7 +27,7 @@
   "scripts": {
     "build": "unbuild",
     "dev": "vitest dev",
-    "prepack": "pnpm run build && pnpm run test",
+    "prepack": "pnpm run build",
     "test": "vitest run",
     "lint": "eslint src --ext .js,.ts"
   },
