@@ -1,5 +1,5 @@
 import { defineMessages } from '@formatjs/intl'
-import { NumberFormat } from '@formatjs/intl-numberformat/src/core.js'
+import { NumberFormat } from '@formatjs/intl-numberformat/lib/src/core.js'
 import { describe, expect, it, vi } from 'vitest'
 import { createIntl, createIntlCache } from '..'
 
