@@ -19,6 +19,10 @@ const year = month * 12
 vi.useFakeTimers()
 vi.setSystemTime(now)
 
+function withAbnormalSpacesReplaced(value: string): string {
+  return value.replace(/[\u202F\u00A0]/g, ' ')
+}
+
 describe('polyfill', () => {
   it('forced', async () => {
     expect(Intl.NumberFormat).toBe(NumberFormat)
@@ -111,12 +115,14 @@ describe('IntlShape', () => {
 
   it('formatMessage (compactNumber)', () => {
     expect(
-      intl.$t(messages.cats, {
-        count: intl.formatCompactNumber(1_256, {
-          maximumFractionDigits: 1,
+      withAbnormalSpacesReplaced(
+        intl.$t(messages.cats, {
+          count: intl.formatCompactNumber(1_256, {
+            maximumFractionDigits: 1,
+          }),
         }),
-      }),
-    ).toBe('1,3\u00A0тис. котів')
+      ),
+    ).toBe('1,3 тис. котів')
   })
 
   it('$ago is the same as formatTimeDifference', () => {
@@ -216,18 +222,20 @@ describe('IntlShape', () => {
 
   it('formatTimeDifference (all units excluded)', () => {
     expect(
-      intl.formatTimeDifference(now, {
-        excludedUnits: [
-          'years',
-          'quarters',
-          'months',
-          'weeks',
-          'days',
-          'hours',
-          'minutes',
-          'seconds',
-        ],
-      }),
+      withAbnormalSpacesReplaced(
+        intl.formatTimeDifference(now, {
+          excludedUnits: [
+            'years',
+            'quarters',
+            'months',
+            'weeks',
+            'days',
+            'hours',
+            'minutes',
+            'seconds',
+          ],
+        }),
+      ),
     ).toBe('1 січня 2023 р. о 00:00')
   })
 
