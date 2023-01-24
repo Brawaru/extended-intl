@@ -10,10 +10,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
     },
-    "./forceNumberFormatPolyfill": {
-      "types": "./dist/forceNumberFormatPolyfill.d.ts",
-      "import": "./dist/forceNumberFormatPolyfill.mjs"
-    },
     "./locale-data/*": {
       "types": "./dist/locale-data/*.d.ts",
       "import": "./dist/locale-data/*.mjs"
