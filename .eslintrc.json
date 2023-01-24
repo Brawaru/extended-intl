@@ -32,6 +32,6 @@
     "@typescript-eslint/no-useless-constructor": "warn"
   },
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.lint.json"
   }
 }
