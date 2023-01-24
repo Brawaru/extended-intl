@@ -2,15 +2,11 @@
 
 > Wrapper for [`@formatjs/intl`](https://npm.im/@formatjs/intl) with additional features.
 
-## ⚠ Caution
-
-This was not tested in production use and was published early solely because its author could not figure out monorepos. Use with caution and expect updates with potential breaking changes (with major version bump).
-
 ## Features
 
 ### `CompactNumber`
 
-**Requires forcing `Intl.NumberFormat` polyfill. Learn more below.**
+**Requires CLDR data to be imported. Learn more below.**
 
 Create a convertible instances of `CompactNumber`, an object representing a number formatted in compact notation, with ability to convert it to an actual number that you can use to select **correct** plural form — something you can't do with built-in Intl APIs. [Learn more →](https://docs.google.com/document/d/1Wx9Drhpl9p2ZqVZMGQ7KUF4pUfPtuJupv8oQ_Gf6sEE/edit)
 
@@ -138,18 +134,21 @@ Alias for `createIntlCache` is also available, and while it's identical to the o
 
 This package is written in TypeScript and almost all methods contain documentation.
 
-## Improved NumberFormat polyfill injection
+## CLDR locale data
 
-Since `CompactNumber` relies on CLDR data that is not available through browser built-in APIs, `Intl.NumberFormat` needs to be polyfilled. Without it, the results of `CompactNumber` will be inaccurate and the API is pointless.
+Since `CompactNumber` relies on CLDR data that is not available through browser built-in APIs, additional data needs to be imported. Without it, the results of `CompactNumber` will be inaccurate and the API itself is pointless.
 
-> **Warning**
-> The polyfill has numerous small bugs, as well as lacks support for BigInt, beware of that.
+To import locale data import one of the files from `/locale-data`:
 
-Default injector by `@formatjs` does not work well with Node.js, so there's a different kind of polyfill injector available in this package through import of `@braw/extended-intl/forceNumberFormatPolyfill` (warning: it's an import with side effects!). Locale data still has to be added through import of `@formatjs/intl-numberformat/locale-data/…`.
+```ts
+// The first imported locale is considered the fallback if data is missing
+import '@braw/extended-intl/locale-data/en'
+import '@braw/extended-intl/locale-data/uk'
 
-## Contributing
+import { setDefaultNumberFormatDataLocale } from '@braw/extended-intl'
 
-If this is at all possible, I would want to get rid of the polyfill requirement for `CompactNumber` API, since I think it's a big barrier for a lot of projects. Instead it could be a small subset of data from CLDR required to compute the ‘pluralisable’ number. If you know how to do that and want to implement that, this project is completely open source and you can submit a [pull request on GitHub → ](https://github.com/brawaru/extended-intl/)
+setDefaultNumberFormatDataLocale('uk') // set alternative fallback data
+```
 
 ## Acknowledgements
 
