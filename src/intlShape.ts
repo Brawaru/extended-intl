@@ -1,10 +1,12 @@
 import {
   createIntl as _createIntl,
+  MissingDataError,
   type IntlCache,
   type IntlConfig,
 } from '@formatjs/intl'
 import { formatCompactNumber, isCompactNumber } from './compactNumber.js'
 import { formatCustomMessage } from './customMessage.js'
+import { supportedLocalesOf } from './compactLocaleData.js'
 import { formatTimeDifference as formatTimeDifferenceImpl } from './timeDifference.js'
 import type { IntlShape } from './types.js'
 
@@ -13,6 +15,14 @@ export function createIntl<T = string>(
   cache?: IntlCache,
 ): IntlShape<T> {
   const shape = _createIntl(config, cache) as IntlShape<T>
+
+  if (supportedLocalesOf(config.locale).length < 1) {
+    shape.onError(
+      new MissingDataError(
+        `Missing locale data for locale: "${config.locale}" of compact number API.`,
+      ),
+    )
+  }
 
   shape.formatCompactNumber = formatCompactNumber.bind(
     null,

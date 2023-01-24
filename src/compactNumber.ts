@@ -1,6 +1,8 @@
 import {
   ComputeExponent,
   FormatNumericToString,
+  type NumberFormatOptions,
+  type NumberFormatInternal,
 } from '@formatjs/ecma402-abstract'
 import {
   type FormatNumberOptions,
@@ -9,16 +11,8 @@ import {
   IntlErrorCode,
   type ResolvedIntlConfig,
 } from '@formatjs/intl'
-import getInternalSlotsImport from '@formatjs/intl-numberformat/src/get_internal_slots.js'
-import { getFormatter } from '@formatjs/intl/src/number.js'
-
-const getInternalSlots = (() => {
-  if ('default' in getInternalSlotsImport) {
-    return getInternalSlotsImport.default
-  }
-
-  return getInternalSlotsImport
-})()
+import { getLocaleData } from './compactLocaleData.js'
+import { getFormatter } from './number.js'
 
 export type FormatCompactNumberOptions = Omit<FormatNumberOptions, 'notation'>
 
@@ -51,6 +45,24 @@ export interface CompactNumber {
   toParts(): Intl.NumberFormatPart[]
 }
 
+function toFakeInternalSlots(nf: Intl.NumberFormat): NumberFormatInternal {
+  const opts = nf.resolvedOptions()
+
+  const localeData = getLocaleData(
+    nf.resolvedOptions().locale,
+    opts as NumberFormatOptions,
+  )
+
+  if (localeData == null) {
+    throw new Error(`Missing locale data for locale "${opts.locale}"`)
+  }
+
+  return {
+    ...nf.resolvedOptions(),
+    dataLocaleData: localeData as any,
+  } as NumberFormatInternal
+}
+
 export function formatCompactNumber(
   getNumberFormat: Formatter,
   config: Config,
@@ -58,14 +70,15 @@ export function formatCompactNumber(
   options?: FormatCompactNumberOptions,
 ): CompactNumber {
   let nf: Intl.NumberFormat | undefined
+  const { onError, locale, formats } = config
 
   try {
-    nf = getFormatter(config, getNumberFormat, {
+    nf = getFormatter({ locale, formats, onError }, getNumberFormat, {
       ...(options ?? {}),
       notation: 'compact',
     })
   } catch (e) {
-    config.onError?.(
+    onError?.(
       new IntlError(
         IntlErrorCode.FORMAT_ERROR,
         'Error creating formatter for the compact number.',
@@ -77,7 +90,7 @@ export function formatCompactNumber(
   }
 
   const reportError = (err: unknown) =>
-    config.onError?.(
+    config.onError(
       new IntlError(
         IntlErrorCode.FORMAT_ERROR,
         'Error formatting the compact number',
@@ -102,8 +115,12 @@ export function formatCompactNumber(
         try {
           const nf = ensureFormatter()
 
+          const internalSlots = toFakeInternalSlots(nf)
+
           const [exponent] = ComputeExponent(nf, value, {
-            getInternalSlots,
+            getInternalSlots() {
+              return internalSlots
+            },
           })
 
           const numeric =
@@ -112,7 +129,7 @@ export function formatCompactNumber(
               : value / Math.pow(10, exponent)
 
           const { roundedNumber } = FormatNumericToString(
-            getInternalSlots(nf),
+            nf.resolvedOptions() as NumberFormatInternal,
             numeric,
           )
 

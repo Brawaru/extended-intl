@@ -1,11 +1,11 @@
 import { defineMessages } from '@formatjs/intl'
-import { NumberFormat } from '@formatjs/intl-numberformat/lib/src/core.js'
 import { describe, expect, it, vi } from 'vitest'
 import { createIntl, createIntlCache } from '../dist/index'
 
-import '../dist/forceNumberFormatPolyfill'
-import '@formatjs/intl-numberformat/locale-data/en'
-import '@formatjs/intl-numberformat/locale-data/uk'
+import '../dist/locale-data/en'
+import '../dist/locale-data/uk'
+import '../dist/locale-data/de'
+import '../dist/locale-data/ar'
 
 const now = new Date(2023, 0, 1, 0, 0, 0, 0).getTime()
 const second = 1_000
@@ -23,18 +23,11 @@ function withAbnormalSpacesReplaced(value: string): string {
   return value.replace(/[\u202F\u00A0]/g, ' ')
 }
 
-describe('polyfill', () => {
-  it('forced', async () => {
-    expect(Intl.NumberFormat).toBe(NumberFormat)
-  })
-})
-
 describe('createIntl', () => {
   it('works', () => {
     const intl = createIntl({
       locale: 'en-US',
       defaultLocale: 'en-US',
-      messages: {},
     })
 
     expect(intl).toBeDefined()
@@ -44,21 +37,45 @@ describe('createIntl', () => {
 })
 
 describe('CompactNumber', () => {
-  const intl = createIntl({
-    locale: 'en-US',
-    defaultLocale: 'en-US',
-    messages: {},
-  })
+  const tests = [
+    ['en-US', '1.5K', 1500],
+    ['uk', '1,5 тис.', 1500],
+    ['de', '1456', 1456],
+    ['ar', '١٫٥ ألف', 1500],
+  ] as const
 
-  it('converts to string', () => {
-    expect(intl.formatCompactNumber(1456).toString()).toBe('1.5K')
-    expect(String(intl.formatCompactNumber(1456))).toBe('1.5K')
-  })
+  for (const [locale, expectedString, expectedNumber] of tests) {
+    const intl = createIntl({
+      locale,
+    })
 
-  it('converts to number', () => {
-    debugger
-    expect(intl.formatCompactNumber(1456).valueOf()).toBe(1500)
-    expect(Number(intl.formatCompactNumber(1456))).toBe(1500)
+    const compactNumber = intl.formatCompactNumber(1456)
+
+    it(`converts to string (${locale})`, () => {
+      expect(withAbnormalSpacesReplaced(String(compactNumber))).toBe(
+        expectedString,
+      )
+    })
+
+    it(`converts to number (${locale})`, () => {
+      expect(Number(compactNumber)).toBe(expectedNumber)
+    })
+  }
+
+  // en is the first locale import, means it will be the default locale
+  it('errors on unknown locale, but uses "en" as fallback', () => {
+    const onError = vi.fn()
+    const intl = createIntl({
+      // we never added zh-Hans data, so this must error
+      locale: 'zh-Hans',
+      onError,
+    })
+
+    const compactNumber = intl.formatCompactNumber(14567)
+
+    expect(String(compactNumber)).toBe('1.5万')
+    expect(Number(compactNumber)).toBe(15000)
+    expect(onError).toHaveBeenCalledOnce()
   })
 })
 
@@ -80,7 +97,7 @@ describe('IntlShape', () => {
   } as const)
 
   type MessagesMap = {
-    [K in typeof messages[keyof typeof messages]['id']]: string
+    [K in (typeof messages)[keyof typeof messages]['id']]: string
   }
 
   const ukMessages: MessagesMap = {

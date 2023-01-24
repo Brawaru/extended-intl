@@ -9,11 +9,15 @@ specifiers:
   '@formatjs/ecma402-abstract': ^1.14.3
   '@formatjs/icu-messageformat-parser': ^2.1.14
   '@formatjs/intl': ^2.6.3
-  '@formatjs/intl-numberformat': ^8.3.3
+  '@formatjs/intl-localematcher': ^0.2.32
   '@nuxtjs/eslint-config-typescript': ^12.0.0
   '@rollup/plugin-babel': ^6.0.3
+  '@types/fs-extra': ^11.0.1
   '@types/node': ^18.11.18
+  chalk: ^5.2.0
+  cldr-numbers-modern: ^42.0.0
   eslint: ^8.31.0
+  fs-extra: ^11.1.0
   intl-messageformat: ^10.2.5
   prettier: ^2.8.3
   prettier-plugin-jsdoc: ^0.4.2
@@ -26,7 +30,7 @@ dependencies:
   '@formatjs/ecma402-abstract': 1.14.3
   '@formatjs/icu-messageformat-parser': 2.1.14
   '@formatjs/intl': 2.6.3_typescript@4.9.4
-  '@formatjs/intl-numberformat': 8.3.3
+  '@formatjs/intl-localematcher': 0.2.32
   intl-messageformat: 10.2.5
 
 devDependencies:
@@ -37,8 +41,12 @@ devDependencies:
   '@babel/preset-typescript': 7.18.6_@babel+core@7.20.12
   '@nuxtjs/eslint-config-typescript': 12.0.0_iukboom6ndih5an6iafl45j2fe
   '@rollup/plugin-babel': 6.0.3_rwtmcocladng44j6a3ylx32v3q
+  '@types/fs-extra': 11.0.1
   '@types/node': 18.11.18
+  chalk: 5.2.0
+  cldr-numbers-modern: 42.0.0_cldr-core@42.0.0
   eslint: 8.31.0
+  fs-extra: 11.1.0
   prettier: 2.8.3
   prettier-plugin-jsdoc: 0.4.2_prettier@2.8.3
   semantic-release: 20.0.2
@@ -1542,14 +1550,6 @@ packages:
       tslib: 2.4.1
     dev: false
 
-  /@formatjs/intl-numberformat/8.3.3:
-    resolution: {integrity: sha512-11mSFZb5RsCVZMVaHbRcDYNxQ+tsstReL62AJcTCBZdvAZMqECOEsDkJODZ90nf/ClKqp0/KxwVlshxprn22Nw==}
-    dependencies:
-      '@formatjs/ecma402-abstract': 1.14.3
-      '@formatjs/intl-localematcher': 0.2.32
-      tslib: 2.4.1
-    dev: false
-
   /@formatjs/intl/2.6.3_typescript@4.9.4:
     resolution: {integrity: sha512-JaVZk14U/GypVfCZPevQ0KdruFkq16FXx7g398/Dm+YEx/W7sRiftbZeDy4wQ7WGryb45e763XycxD9o/vm9BA==}
     peerDependencies:
@@ -2043,12 +2043,25 @@ packages:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: true
 
+  /@types/fs-extra/11.0.1:
+    resolution: {integrity: sha512-MxObHvNl4A69ofaTRU8DFqvgzzv8s9yRtaPPm5gud9HDNvpB3GPQFvNuTWAI59B9huVGV5jXYJwbCsmBsOGYWA==}
+    dependencies:
+      '@types/jsonfile': 6.1.1
+      '@types/node': 18.11.18
+    dev: true
+
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/jsonfile/6.1.1:
+    resolution: {integrity: sha512-GSgiRCVeapDN+3pqA35IkQwasaCh/0YFH5dEF6S88iDvEn901DjOeH3/QPY+XYP1DFzDZPvIvfeEgk+7br5png==}
+    dependencies:
+      '@types/node': 18.11.18
     dev: true
 
   /@types/mdast/3.0.10:
@@ -2547,6 +2560,18 @@ packages:
   /ci-info/3.7.0:
     resolution: {integrity: sha512-2CpRNYmImPx+RXKLq6jko/L07phmS9I02TyqkcNU20GCF/GgaWvc58hPtjxDX8lPpkdwc9sNh72V9k00S7ezog==}
     engines: {node: '>=8'}
+    dev: true
+
+  /cldr-core/42.0.0:
+    resolution: {integrity: sha512-9Sqy6zdOkt3c3A56hpSM9lvMyUM8h78iJ4JzX1u+kQvUz/Vbvqnm8ySxgWfe8lpx1Hrl30dg8NWdTlcKCpLIbg==}
+    dev: true
+
+  /cldr-numbers-modern/42.0.0_cldr-core@42.0.0:
+    resolution: {integrity: sha512-jS7mly/5ajwodCqaMKMbgzT5TeM7hT60OxtTHvf4wVf2ibSWm0SZzuquUQ/b0/XNeVWlPVK8x+nNJUwy8ifAnA==}
+    peerDependencies:
+      cldr-core: 42.0.0
+    dependencies:
+      cldr-core: 42.0.0
     dev: true
 
   /clean-regexp/1.0.0:

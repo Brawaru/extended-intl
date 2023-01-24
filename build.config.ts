@@ -1,51 +1,26 @@
+import path from 'path'
 import { defineBuildConfig } from 'unbuild'
 import { babel } from '@rollup/plugin-babel'
-
-/** A map of CJS file imports that have ESM alternatives. */
-const esmReplaces: Record<string, string> = {
-  '@formatjs/intl-numberformat/src/get_internal_slots.js':
-    '@formatjs/intl-numberformat/lib/src/get_internal_slots.js',
-  '@formatjs/intl/src/number.js': '@formatjs/intl/lib/src/number.js',
-  '@formatjs/intl-numberformat/src/core.js':
-    '@formatjs/intl-numberformat/lib/src/core.js',
-  '@formatjs/intl-numberformat/src/to_locale_string.js':
-    '@formatjs/intl-numberformat/lib/src/to_locale_string.js',
-}
+import chalk from 'chalk'
+import { generateLocaleData } from './jobs/localeDataGen'
 
 export default defineBuildConfig({
+  entries: [
+    {
+      input: './src/index',
+      name: 'index',
+      builder: 'rollup',
+      declaration: true,
+      outDir: './dist',
+    },
+  ],
   hooks: {
+    'build:prepare'(ctx) {
+      ctx.options.declaration = ctx.options.entries.some(
+        (entry) => entry.declaration,
+      )
+    },
     'rollup:options'(_ctx, options) {
-      let outputs = Array.isArray(options.output)
-        ? options.output
-        : options.output == null
-        ? []
-        : [options.output]
-
-      for (const output of outputs) {
-        if (output.format === 'esm') {
-          if (!Array.isArray(output.plugins)) {
-            if (output.plugins != null && typeof output.plugins !== 'boolean') {
-              output.plugins = [output.plugins]
-            } else {
-              output.plugins = []
-            }
-
-            output.plugins.push({
-              name: 'Patch up ESM imports', // NOTE: I hate CJS/ESM :D
-              renderChunk(code, _chunk, _options) {
-                let newCode = code
-                for (const [search, replacement] of Object.entries(
-                  esmReplaces,
-                )) {
-                  newCode = newCode.replace(search, replacement)
-                }
-                return newCode
-              },
-            })
-          }
-        }
-      }
-
       if (!Array.isArray(options.plugins)) {
         if (options.plugins != null && typeof options.plugins !== 'boolean') {
           options.plugins = [options.plugins]
@@ -79,6 +54,19 @@ export default defineBuildConfig({
           }
         }
       }
+    },
+    'rollup:done'(ctx) {
+      // eslint-disable-next-line no-console
+      console.info(`${chalk.yellow('↯')} Generating locale data...`)
+
+      const outDir = path.join(process.cwd(), 'dist', 'locale-data')
+
+      const writtenFiles = generateLocaleData({ outDir })
+
+      ctx.buildEntries.push({
+        path: outDir,
+        bytes: writtenFiles.reduce((total, emit) => total + emit[1], 0),
+      })
     },
   },
 })
