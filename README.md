@@ -2,6 +2,17 @@
 
 > Wrapper for [`@formatjs/intl`](https://npm.im/@formatjs/intl) with additional features.
 
+---
+
+## ⚠ This package is deprecated!
+
+Please use [`@braw/compact-number`] and [`@braw/how-ago`] instead. They enable the same functionality without needing to wrap the entire Intl module.
+
+[`@braw/compact-number`]: https://npm.im/@braw/compact-number
+[`@braw/how-ago`]: https://npm.im/@braw/how-ago
+
+---
+
 ## Features
 
 ### `CompactNumber`
